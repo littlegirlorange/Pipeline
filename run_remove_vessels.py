@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Removes vessels from lesion probability maps. Probability maps are thresholded prior to processing.
+Lesion map thresholding and vessel removal step of the Breast CAD pipeline.
 @author: Maggie Kusano
 @date: November 26, 2015
 """
 
 import os
-import sys
 import fnmatch
 
+import pipeline_utils as utils
 from BreastCAD import threshold_image, remove_vessels
 from BreastCAD.pipeline_params import *
 
 def main():
-    """
-    """
 
     # ==================================================================================================================
     # Make sure everything exists before starting pipeline
@@ -39,15 +37,7 @@ def main():
     #
     # Open study list.
     print "Generating task list..."
-    fileobj = open(TASK_FILE, "r")
-    tasklist = []
-    try:
-        for line in fileobj:
-            # Get the study and accession number.
-            lineparts = line.split()
-            tasklist.append(lineparts)
-    finally:
-        fileobj.close()
+    tasklist = utils.build_tasklist()
 
     for iItem, item in enumerate(tasklist):
 
@@ -71,10 +61,9 @@ def main():
         print "Processing Study: " + _study_no + "..."
 
         # --------------------------------------------------------------------------------------------------------------
-        #  Perform optical flow motion correction on post-contrast images (align post-contrast to pre-contrast fat
-        #  suppressed image).
+        #  Remove vessels from lesion probability map images.
         #
-        print "    Thresholding lesion probability map images..."
+        print "    Removing vessels from lesion probability map images..."
         # Find input lesion probablity maps.
         contents = os.listdir(_outputDir)
         for accession_no in (_accession_no_fixed, _accession_no_moving):

@@ -13,7 +13,7 @@ import subprocess
 
 FNULL = open(os.devnull, 'w')    #use this if you want to suppress output to stdout from the subprocess
 
-def do_Dcm2Mha(dcm23d_exe, input_directory, output_directory, dicom_filter="MR.*", series_description_filter=""):
+def do_dcm2mha(dcm23d_exe, input_directory, output_directory, dicom_filter="MR.*", series_description_filter=""):
 
     # Find all folders containing images with matching series descriptions.
     matchingSeriesPaths = []

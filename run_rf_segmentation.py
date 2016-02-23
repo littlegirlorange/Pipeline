@@ -1,29 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-Runs all steps of the BreastCAD pipeline.
+Runs the breast segmentation step of the BreastCAD pipeline.
 @author: Maggie Kusano
 @date: November 19, 2015
 """
 
 import os
-import sys
 import fnmatch
 
-from BreastCAD import dcm2mha, rf_segmentation, elastix_registration, ann_segmentation
+import pipeline_utils as utils
+from BreastCAD import rf_segmentation
 from BreastCAD.pipeline_params import *
 
+
 def main():
-    """ Runs the Breast CAD pipeline
-    """
 
     # ======================================================================================================================
     # Make sure everything exists before starting pipeline
     #
     if not os.path.isfile(TASK_FILE):
         print "ERROR: TASK_FILE (" + TASK_FILE + ") does not exist."
-        return 1
-    if not os.path.exists(INPUT_DIRECTORY):
-        print "ERROR: INPUT_DIRECTORY (" + INPUT_DIRECTORY + ") does not exist."
         return 1
     if not os.path.exists(OUTPUT_DIRECTORY):
         os.makedirs(OUTPUT_DIRECTORY)
@@ -39,15 +35,7 @@ def main():
     #
     # Open study list.
     print "Generating task list..."
-    fileobj = open(TASK_FILE, "r")
-    tasklist = []
-    try:
-        for line in fileobj:
-            # Get the study and accession number.
-            lineparts = line.split()
-            tasklist.append(lineparts)
-    finally:
-        fileobj.close()
+    tasklist = utils.build_tasklist()
 
     for iItem, item in enumerate(tasklist):
 
@@ -55,16 +43,6 @@ def main():
         _accession_no_fixed = item[1]
         _accession_no_moving = item[2]
         print "    Study: " + _study_no + ", Fixed: " + _accession_no_fixed + ", Moving: " + _accession_no_moving
-        _inputDir = INPUT_DIRECTORY + os.sep + _study_no
-        if not os.path.exists(_inputDir):
-            print "Study not found (" + _inputDir + "). Skipping."
-            continue
-        if not os.path.exists(_inputDir + os.sep + _accession_no_fixed):
-            print "Fixed accession number not found (" + _accession_no_fixed + "). Skipping."
-            continue
-        if not os.path.exists(_inputDir + os.sep + _accession_no_moving):
-            print "Moving accession number not found (" + _accession_no_moving + "). Skipping."
-            continue
         _outputDir = OUTPUT_DIRECTORY + os.sep + _study_no + "_" + _accession_no_fixed + "_" + _accession_no_moving
         if not os.path.exists(_outputDir):
             os.makedirs(_outputDir)
@@ -74,7 +52,6 @@ def main():
         # Calculate breast masks from non-fat suppressed images.
         #
         print "    Calculating breast masks for non-fat suppressed images..."
-        return_value = 1
         for path, dirnames, filenames in os.walk(_outputDir):
             files = fnmatch.filter(filenames, RFSEGMENTATION_IMG_TYPE_FILTER)
             for f in files:

@@ -10,18 +10,22 @@ import subprocess
 import fnmatch
 
 
-def do_motion_correction(exe_file, fixed_file, moving_files):
-    '''
-    Call motion correction executable.
+def do_threshold_image(exe_file, input_file, output_file, lower_threshold, upper_threshold, foreground_value):
+    ''' Call thresholdImage executable.
+    :param exe_file:
+    :param input_file:
+    :param output_file:
+    :param lower_threshold:
+    :param upper_threshold:
+    :param foreground_value:
+    :return:
     '''
 
     exe_path = os.path.dirname(exe_file)
     if exe_path not in os.environ["PATH"]:
         os.environ["PATH"] += os.pathsep + exe_path
 
-    exe_cmd = '"' + exe_file + '"' + \
-              ' -f ' + fixed_file + \
-              ' -m ' + moving_files[0] + ' ' + moving_files[1] + ' ' + moving_files[2] + ' ' + moving_files[3]
+    exe_cmd = '"' + exe_file + '"' + " " + '"' + input_file + '"' + " " + str(lower_threshold) + " " + str(upper_threshold) + " " + str(foreground_value) + " " + '"' + output_file
 
     print('doing: ' + exe_cmd)
     # cmd_result = subprocess.call(exe_cmd, stdout=FNULL, stderr=FNULL, shell=False)

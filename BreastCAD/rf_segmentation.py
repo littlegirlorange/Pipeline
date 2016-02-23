@@ -6,6 +6,7 @@ Perform Random Forest Segmentation on the input images.
 """
 
 import subprocess
+import os
 
 
 def do_rf_segmentation(RFSegmentation_exe,
@@ -16,6 +17,10 @@ def do_rf_segmentation(RFSegmentation_exe,
     '''
     Call Random Forest breast segmentation
     '''
+
+    exe_path = os.path.dirname(RFSegmentation_exe)
+    if exe_path not in os.environ["PATH"]:
+        os.environ["PATH"] += os.pathsep + exe_path
 
     RFSegmentation_cmd = '"' + RFSegmentation_exe + '" ' \
                          + input_file + " " \

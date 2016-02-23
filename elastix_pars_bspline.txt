@@ -1,29 +1,27 @@
-// This file was created by YingLi Lu @ 2015/07/14, according to to Martin Durant's draft paper:
-// "Deformable registration of breast MRI screenings across multiple visits as a means to assess lesion history:"
-// ..."For elastix, TransformRigidityPenalty with relative weight 0.3, 500  iterations, 2 resolution levels, 
-//     32 histogram bins, grid spacing 16 mm,  iteration- and final-Bspline interpolation order 2 and 3, respectively..." 
+// This file was created by Hatef Mehrabian @ 2015/12/01, with the optimized resigteration parameters:
+ 
 
 (NumberOfSpatialSamples  4096)
 (FinalGridSpacingInPhysicalUnits  16)
 (Transform  "BSplineTransform")
 (xtol 5e-05)
 (WriteResultImage  "true")
-(NumberOfResolutions 2)
+(NumberOfResolutions 4)
 (sat False)
 (Optimizer  "AdaptiveStochasticGradientDescent")
 (Metric0Weight 1.0)
 (two_step False)
 (MovingImagePyramid  "MovingRecursiveImagePyramid")
-(NumberOfHistogramBins 32)
+(NumberOfHistogramBins 64)
 (Interpolator  "BSplineInterpolator")
 (maxiter 200)
 (ftol 0.0005)
 (ResampleInterpolator  "FinalBSplineInterpolator")
 (mode affine)
 (optimizer powell)
-(MaximumNumberOfIterations 500)
+(MaximumNumberOfIterations 300)
 (MovingImageDimension  3)
-(BSplineInterpolationOrder  2)
+(BSplineInterpolationOrder  3)
 (direct True)
 (FixedImageDimension  3)
 (NewSamplesEveryIteration  "true")

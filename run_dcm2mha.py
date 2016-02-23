@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Runs all steps of the BreastCAD pipeline.
+Runs the DICOM to MHA step of the BreastCAD pipeline.
 @author: Maggie Kusano
 @date: November 19, 2015
 """
 
 import os
 
+import pipeline_utils as utils
 from BreastCAD import dcm2mha
 from BreastCAD.pipeline_params import *
 
+
 def main():
-    """ Runs the Breast CAD pipeline
-    """
 
     # ======================================================================================================================
     # Make sure everything exists before starting pipeline
@@ -20,8 +20,8 @@ def main():
     if not os.path.isfile(TASK_FILE):
         print "ERROR: TASK_FILE (" + TASK_FILE + ") does not exist."
         return 1
-    if not os.path.exists(INPUT_DIRECTORY):
-        print "ERROR: INPUT_DIRECTORY (" + INPUT_DIRECTORY + ") does not exist."
+    if not os.path.exists(DCM_INPUT_DIRECTORY):
+        print "ERROR: INPUT_DIRECTORY (" + DCM_INPUT_DIRECTORY + ") does not exist."
         return 1
     if not os.path.exists(OUTPUT_DIRECTORY):
         os.makedirs(OUTPUT_DIRECTORY)
@@ -34,15 +34,7 @@ def main():
     #
     # Open study list.
     print "Generating task list..."
-    fileobj = open(TASK_FILE, "r")
-    tasklist = []
-    try:
-        for line in fileobj:
-            # Get the study and accession numbers.
-            lineparts = line.split()
-            tasklist.append(lineparts)
-    finally:
-        fileobj.close()
+    tasklist = utils.build_tasklist()
 
     for iItem, item in enumerate(tasklist):
 
@@ -50,7 +42,7 @@ def main():
         _accession_no_fixed = item[1]
         _accession_no_moving = item[2]
         print "    Study: " + _study_no + ", Fixed: " + _accession_no_fixed + ", Moving: " + _accession_no_moving
-        _inputDir = INPUT_DIRECTORY + os.sep + _study_no
+        _inputDir = DCM_INPUT_DIRECTORY + os.sep + _study_no
         if not os.path.exists(_inputDir):
             print "Study not found (" + _inputDir + "). Skipping."
             continue
@@ -69,7 +61,6 @@ def main():
         # Convert DICOM to MHA.
         #
         print "    Converting DICOM to MHA..."
-        #_inputDir = _inputDir + os.sep + _accession_no_moving
         dcm2mha.do_dcm2mha(DCM23D_EXE, _inputDir, _outputDir, DCM23D_DICOM_FILE_FILTER, DCM23D_SERIES_DESC_FILTER)
 
 

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Runs all steps of the BreastCAD pipeline.
+Runs the elastix registration step of the BreastCAD pipeline.
 @author: Maggie Kusano
 @date: November 19, 2015
 """
 
 import os
-import sys
 import fnmatch
 
-from BreastCAD import dcm2mha, rf_segmentation, elastix_registration, ann_segmentation
+import pipeline_utils as utils
+from BreastCAD import elastix_registration
 from BreastCAD.pipeline_params import *
 
 def main():
@@ -42,15 +42,7 @@ def main():
     #
     # Open study list.
     print "Generating task list..."
-    fileobj = open(TASK_FILE, "r")
-    tasklist = []
-    try:
-        for line in fileobj:
-            # Get the study and accession number.
-            lineparts = line.split()
-            tasklist.append(lineparts)
-    finally:
-        fileobj.close()
+    tasklist = utils.build_tasklist()
 
     for iItem, item in enumerate(tasklist):
 

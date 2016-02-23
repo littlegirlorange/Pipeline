@@ -10,7 +10,7 @@ import subprocess
 import fnmatch
 
 
-def do_ANNSegmentation(exe_file, model_file, input_files, mask_file, output_file):
+def do_ann_segmentation(exe_file, model_file, input_files, mask_file, output_file):
     '''
     Call ANN breast segmentation
     '''
@@ -29,6 +29,7 @@ def do_ANNSegmentation(exe_file, model_file, input_files, mask_file, output_file
     cmd_result = subprocess.call(exe_cmd)
     return cmd_result
 
+"""
 # ======================================================================================================================
 # Parameters
 #
@@ -67,3 +68,4 @@ os.environ["PATH"] += os.pathsep + EXE_DIRECTORY
 
 do_ANNSegmentation(exeFile, modelFile, inputFiles, maskFile, outputFile)
 
+"""

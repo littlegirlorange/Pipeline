@@ -6,10 +6,9 @@ Perform Elastix registration on the input images.
 """
 
 import os
-import sys
+import glob
 import subprocess
-import fnmatch
-
+from shutil import move
 import \
     fileinput  # repalce TransformParameters.0.txt with  patient_id1+'_TransformParameters.0.txt' in TransformParameters.1.txt'
 
@@ -17,8 +16,6 @@ def clean_elastix(output_directory):
     '''
     remove elatsix's registration intermediate files
     '''
-    import os
-    import glob
 
     try:
         os.remove(output_directory + os.sep + "result.0.mha")
@@ -78,96 +75,19 @@ def do_elastix(elastix_exe, fixed, moving, output_directory, elastix_affine_pars
     basename_fixed_moving = os.path.basename(fixed)[:-4] + '_' + os.path.basename(moving)[:-4]
     output_TransformParameters_0_txt = output_directory + os.sep + basename_fixed_moving + '_TransformParameters.0.txt'
     output_TransformParameters_1_txt = output_directory + os.sep + basename_fixed_moving + '_TransformParameters.1.txt'
-    output_warped_image_elastix = output_directory + os.sep + basename_fixed_moving + '_warped_elastix.mha'
+    output_warped_image_elastix = output_directory + os.sep + basename_fixed_moving + '_reg.mha'
 
-    if not os.path.exists(output_warped_image_elastix):
-        print('doing: ' + elastix_cmd)
-        # elastix_cmd_result = subprocess.call(elastix_cmd, stdout=FNULL, stderr=FNULL, shell=False)
-        elastix_cmd_result = subprocess.call(elastix_cmd)
+    print('doing: ' + elastix_cmd)
+    # elastix_cmd_result = subprocess.call(elastix_cmd, stdout=FNULL, stderr=FNULL, shell=False)
+    elastix_cmd_result = subprocess.call(elastix_cmd)
 
-        # rename
-        os.rename(output_directory + os.sep + "TransformParameters.0.txt", output_TransformParameters_0_txt)
-        os.rename(output_directory + os.sep + "TransformParameters.1.txt", output_TransformParameters_1_txt)
-        os.rename(output_directory + os.sep + "result.1.mha", output_warped_image_elastix)
-
-        # replace "TransformParameters.0.txt" to basename_fixed_moving+'_TransformParameters.0.txt',
-        # since TransformParameters.1.txt will read basename_fixed_moving+'_TransformParameters.0.txt
-        for line in fileinput.input(output_TransformParameters_1_txt, inplace=True):
-            print(line.replace("TransformParameters.0.txt", basename_fixed_moving + '_TransformParameters.0.txt'))
+    # rename
+    move(output_directory + os.sep + "TransformParameters.0.txt", output_TransformParameters_0_txt)
+    move(output_directory + os.sep + "TransformParameters.1.txt", output_TransformParameters_1_txt)
+    move(output_directory + os.sep + "result.1.mha", output_warped_image_elastix)
+    # replace "TransformParameters.0.txt" to basename_fixed_moving+'_TransformParameters.0.txt',
+    # since TransformParameters.1.txt will read basename_fixed_moving+'_TransformParameters.0.txt
+    for line in fileinput.input(output_TransformParameters_1_txt, inplace=True):
+        print(line.replace("TransformParameters.0.txt", basename_fixed_moving + '_TransformParameters.0.txt'))
 
     return elastix_cmd_result
-
-"""
-# ======================================================================================================================
-# Parameters
-#
-# Image input params.
-INPUT_DIRECTORY = "D:\\Work\\BreastCAD\\TestData"
-INPUT_STUDY = "7199"
-INPUT_FIXED_ACCESSION = "7709063"
-INPUT_MOVING_ACCESSION = "7323987"
-INPUT_FILTER = ".wo.FS.mha"
-MASK_FILTER = "_mask.mha"
-
-# Use mask for registration?
-WITH_MASK = False  # False
-
-# Output params.
-OUTPUT_DIRECTORY = "D:\\Work\\BreastCAD\\TestData"
-
-# Path to Elastix and parameter files.
-EXE_DIRECTORY = "C:\\Program Files (x86)\\elastix"
-EXE_FILENAME = "elastix.exe"
-AFFINE_PAR_FILENAME = "elastix_pars_affine.txt"
-BSPLINE_PAR_FILENAME = "elastix_pars_bspline.txt"
-
-# Elastix registration.
-FNULL = open(os.devnull, 'w')  # use this if you want to suppress output to stdout from the subprocess
-elastix_exe = EXE_DIRECTORY + os.sep + EXE_FILENAME
-#transformix_exe = 'C:/Program Files (x86)/elastix/transformix.exe'
-
-# Find fixed a moving files.
-contents = os.listdir(INPUT_DIRECTORY)
-foundFiles = fnmatch.filter(contents, INPUT_STUDY+"*"+INPUT_FIXED_ACCESSION+"*"+INPUT_FILTER)
-if len(foundFiles) != 1:
-    sys.exit("Fixed file not found in " + INPUT_DIRECTORY)
-else:
-    fixedFile = os.path.join(INPUT_DIRECTORY, foundFiles[0])
-foundFiles = fnmatch.filter(contents, INPUT_STUDY+"*"+INPUT_MOVING_ACCESSION+"*"+INPUT_FILTER)
-if len(foundFiles) != 1:
-    sys.exit("Moving file not found in " + INPUT_DIRECTORY)
-else:
-    movingFile = os.path.join(INPUT_DIRECTORY, foundFiles[0])
-
-# Find masks if required.
-if WITH_MASK:
-    foundFiles = fnmatch.filter(contents, INPUT_STUDY+"*"+INPUT_FIXED_ACCESSION+"*"+MASK_FILTER)
-    if len(foundFiles) != 1:
-        sys.exit("Fixed mask not found in " + INPUT_DIRECTORY)
-    else:
-        fixedMaskFile = os.path.join(INPUT_DIRECTORY, foundFiles[0])
-    foundFiles = fnmatch.filter(contents, INPUT_STUDY+"*"+INPUT_MOVING_ACCESSION+"*"+MASK_FILTER)
-    if len(foundFiles) != 1:
-        sys.exit("Moving mask not found in " + INPUT_DIRECTORY)
-    else:
-        movingMaskFile = os.path.join(INPUT_DIRECTORY, foundFiles[0])
-else:
-    fixedMaskFile = ''
-    movingMaskFile = ''
-
-# Run Elastix.
-exeFile = EXE_DIRECTORY + os.sep + EXE_FILENAME
-os.environ["PATH"] += os.pathsep + EXE_DIRECTORY
-thisScriptPath = os.path.dirname(os.path.abspath(__file__))
-elastix_affine_pars = thisScriptPath + os.sep + AFFINE_PAR_FILENAME
-elastix_bspline_pars = thisScriptPath + os.sep + BSPLINE_PAR_FILENAME
-do_elastix(elastix_exe, fixedFile, movingFile, OUTPUT_DIRECTORY,
-           elastix_affine_pars, elastix_bspline_pars,
-           fixedMaskFile, movingMaskFile)
-
-# Apply transform
-
-# remove intermediate files
-clean_elastix(OUTPUT_DIRECTORY)
-
-"""
