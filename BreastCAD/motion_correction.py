@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Perform optical flow motion correction on post-contrast MR images using the fat suppressed pre-contrast image.
+Perform optical flow motion correction.
 @author: Maggie Kusano
 @date: November 26, 2015
 """
@@ -9,6 +9,8 @@ import os
 import subprocess
 import fnmatch
 
+
+FNULL = open(os.devnull, 'w')    #use this if you want to suppress output to stdout from the subprocess
 
 def do_motion_correction(exe_file, fixed_file, moving_files):
     '''
@@ -23,7 +25,7 @@ def do_motion_correction(exe_file, fixed_file, moving_files):
               ' -f ' + fixed_file + \
               ' -m ' + moving_files[0] + ' ' + moving_files[1] + ' ' + moving_files[2] + ' ' + moving_files[3]
 
-    print('doing: ' + exe_cmd)
-    # cmd_result = subprocess.call(exe_cmd, stdout=FNULL, stderr=FNULL, shell=False)
-    cmd_result = subprocess.call(exe_cmd)
+    #print('doing: ' + exe_cmd)
+    cmd_result = subprocess.call(exe_cmd, stdout=FNULL, stderr=FNULL, shell=False)
+    #cmd_result = subprocess.call(exe_cmd)
     return cmd_result

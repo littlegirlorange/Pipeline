@@ -12,7 +12,7 @@ import string
 import pipeline_utils as utils
 from BreastCAD import dcm2mha, rf_segmentation, ann_segmentation, elastix_registration, transformix_registration, \
                       motion_correction, threshold_image, remove_vessels
-from BreastCAD.pipeline_params import *
+from pipeline_params import *
 
 
 def main():

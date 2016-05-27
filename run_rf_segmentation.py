@@ -10,7 +10,7 @@ import fnmatch
 
 import pipeline_utils as utils
 from BreastCAD import rf_segmentation
-from BreastCAD.pipeline_params import *
+from pipeline_params import *
 
 
 def main():

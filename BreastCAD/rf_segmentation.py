@@ -9,6 +9,8 @@ import subprocess
 import os
 
 
+FNULL = open(os.devnull, 'w')    #use this if you want to suppress output to stdout from the subprocess
+
 def do_rf_segmentation(RFSegmentation_exe,
                        input_file,
                        resampled_pixel_spacing_X, resampled_pixel_spacing_Y, resampled_pixel_spacing_Z,
@@ -22,17 +24,17 @@ def do_rf_segmentation(RFSegmentation_exe,
     if exe_path not in os.environ["PATH"]:
         os.environ["PATH"] += os.pathsep + exe_path
 
-    RFSegmentation_cmd = '"' + RFSegmentation_exe + '" ' \
-                         + input_file + " " \
-                         + resampled_pixel_spacing_X + " " \
-                         + resampled_pixel_spacing_Y + " " \
-                         + resampled_pixel_spacing_Z + " " \
-                         + random_forest_trained_file + " " \
-                         + output_file
+    RFSegmentation_cmd = '"' + RFSegmentation_exe + '"' + \
+                         " -i " + input_file + \
+                         " -x " + resampled_pixel_spacing_X + \
+                         " -y " + resampled_pixel_spacing_Y + \
+                         " -z " + resampled_pixel_spacing_Z + \
+                         " -r " + random_forest_trained_file + \
+                         " -o " + output_file
 
-    print('doing: ' + RFSegmentation_cmd)
-    # cmd_result = subprocess.call(RFSegmentation_cmd, stdout=FNULL, stderr=FNULL, shell=False)
-    cmd_result = subprocess.call(RFSegmentation_cmd)
+    #print('doing: ' + RFSegmentation_cmd)
+    cmd_result = subprocess.call(RFSegmentation_cmd, stdout=FNULL, stderr=FNULL, shell=False)
+    #cmd_result = subprocess.call(RFSegmentation_cmd)
     return cmd_result
 
 """

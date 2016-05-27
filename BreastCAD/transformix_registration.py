@@ -5,6 +5,9 @@ Transformix wrapper
 @date: November 22, 2015
 """
 
+import os
+
+FNULL = open(os.devnull, 'w')    #use this if you want to suppress output to stdout from the subprocess
 
 def do_transformix(transformix_exe, input_file, transform_parameters_file, output_file):
     '''
@@ -25,7 +28,7 @@ def do_transformix(transformix_exe, input_file, transform_parameters_file, outpu
                       + ' -out ' + output_directory \
                       + ' -tp ' + transform_parameters_file
     
-    transformix_result = subprocess.call(transformix_cmd)
+    transformix_result = subprocess.call(transformix_cmd, stdout=FNULL, stderr=FNULL, shell=False)
 
     # Use shutil.move instead of os.rename for cases when result.mha already exists.
     move(output_directory + os.sep + "result.mha", output_file)

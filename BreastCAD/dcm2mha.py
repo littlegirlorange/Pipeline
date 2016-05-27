@@ -28,7 +28,7 @@ def do_dcm2mha(dcm23d_exe, input_directory, output_directory, dicom_filter="MR.*
     # Convert all matching series folders to .mha
     for path in matchingSeriesPaths:
         dcm23d_cmd = dcm23d_exe + ' -i ' + path + ' -o ' + output_directory
-        print("Calling " + dcm23d_cmd)
+        #print("Calling " + dcm23d_cmd)
         try:
             dcm23d_cmd_result = subprocess.call(dcm23d_cmd, stdout=FNULL, stderr=FNULL, shell=False)
         except OSError:

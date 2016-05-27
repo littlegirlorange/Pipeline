@@ -12,6 +12,9 @@ from shutil import move
 import \
     fileinput  # repalce TransformParameters.0.txt with  patient_id1+'_TransformParameters.0.txt' in TransformParameters.1.txt'
 
+
+FNULL = open(os.devnull, 'w')    #use this if you want to suppress output to stdout from the subprocess
+
 def clean_elastix(output_directory):
     '''
     remove elatsix's registration intermediate files
@@ -77,9 +80,7 @@ def do_elastix(elastix_exe, fixed, moving, output_directory, elastix_affine_pars
     output_TransformParameters_1_txt = output_directory + os.sep + basename_fixed_moving + '_TransformParameters.1.txt'
     output_warped_image_elastix = output_directory + os.sep + basename_fixed_moving + '_reg.mha'
 
-    print('doing: ' + elastix_cmd)
-    # elastix_cmd_result = subprocess.call(elastix_cmd, stdout=FNULL, stderr=FNULL, shell=False)
-    elastix_cmd_result = subprocess.call(elastix_cmd)
+    elastix_cmd_result = subprocess.call(elastix_cmd, stdout=FNULL, stderr=FNULL, shell=False)
 
     # rename
     move(output_directory + os.sep + "TransformParameters.0.txt", output_TransformParameters_0_txt)

@@ -10,7 +10,8 @@ import fnmatch
 
 import pipeline_utils as utils
 from BreastCAD import threshold_image, remove_vessels
-from BreastCAD.pipeline_params import *
+from pipeline_params import *
+
 
 def main():
 

@@ -10,7 +10,8 @@ import fnmatch
 
 import pipeline_utils as utils
 from BreastCAD import ann_segmentation
-from BreastCAD.pipeline_params import *
+from pipeline_params import *
+
 
 def main():
     """ Runs the Breast CAD pipeline

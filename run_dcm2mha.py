@@ -9,7 +9,7 @@ import os
 
 import pipeline_utils as utils
 from BreastCAD import dcm2mha
-from BreastCAD.pipeline_params import *
+from pipeline_params import *
 
 
 def main():
